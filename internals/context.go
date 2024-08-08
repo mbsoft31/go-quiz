@@ -2,8 +2,8 @@ package internals
 
 import (
 	"context"
+	"github.com/mbsof31/go-quiz/internals/quiz"
 	"net/http"
-	"quiz-go/internals/quiz"
 )
 
 type AppContext struct {

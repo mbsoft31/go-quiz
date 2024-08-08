@@ -1,4 +1,4 @@
-module quiz-go
+module github.com/mbsof31/go-quiz
 
 go 1.22.0
 

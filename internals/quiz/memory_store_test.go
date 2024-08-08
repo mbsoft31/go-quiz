@@ -1,8 +1,8 @@
 package quiz_test
 
 import (
+	"github.com/mbsof31/go-quiz/internals/quiz"
 	"os"
-	"quiz-go/internals/quiz"
 	"testing"
 
 	"github.com/stretchr/testify/assert"

@@ -9,8 +9,8 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
-	"quiz-go/internals/quiz"
-	"quiz-go/views"
+	"github.com/mbsof31/go-quiz/internals/quiz"
+	"github.com/mbsof31/go-quiz/views"
 )
 
 func QuizDetails(q *quiz.Quiz) templ.Component {

@@ -8,8 +8,8 @@ package views
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "quiz-go/views"
-import "quiz-go/internals/quiz"
+import "github.com/mbsof31/go-quiz/views"
+import "github.com/mbsof31/go-quiz/internals/quiz"
 import "fmt"
 
 func QuizListItem(q *quiz.Quiz) templ.Component {

@@ -1,13 +1,13 @@
 package main
 
 import (
+	"github.com/mbsof31/go-quiz/internals"
+	"github.com/mbsof31/go-quiz/internals/quiz"
+	home "github.com/mbsof31/go-quiz/views/home"
+	quizzes "github.com/mbsof31/go-quiz/views/quizzes"
 	"gorm.io/gorm"
 	"log"
 	"net/http"
-	"quiz-go/internals"
-	"quiz-go/internals/quiz"
-	home "quiz-go/views/home"
-	quizzes "quiz-go/views/quizzes"
 	"strconv"
 	"strings"
 

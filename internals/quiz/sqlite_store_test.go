@@ -3,8 +3,8 @@ package quiz_test
 import (
 	"testing"
 
+	"github.com/mbsof31/go-quiz/internals/quiz"
 	"github.com/stretchr/testify/assert"
-	"quiz-go/internals/quiz"
 )
 
 func setupStore(t *testing.T) *quiz.SQLiteStore {
