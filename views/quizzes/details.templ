@@ -1,0 +1,35 @@
+package views
+
+import (
+    "quiz-go/internals/quiz"
+    "quiz-go/views"
+)
+
+
+templ QuizDetails(q *quiz.Quiz) {
+	<div class="mx-auto flex w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+	    <div>
+	        <h1 class="text-3xl font-bold">{q.Name}</h1>
+            <p class="mt-4">{q.Description}</p>
+            <div class="mt-6">
+                <h2 class="text-2xl font-bold">Questions</h2>
+                <ul class="mt-4 list-disc list-inside">
+                    for _, question := range q.Questions {
+                        <li class="mt-2">
+                            <strong>{question.Content}</strong>
+                            <ul class="mt-2 list-inside">
+                                for _, choice := range question.Choices {
+                                    <li>{choice.Content}</li>
+                                }
+                            </ul>
+                        </li>
+                    }
+                </ul>
+            </div>
+	    </div>
+	</div>
+}
+
+templ QuizDetailsPage(q *quiz.Quiz) {
+	@views.Layout(QuizDetails(q))
+}

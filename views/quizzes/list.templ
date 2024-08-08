@@ -1,0 +1,33 @@
+package views
+
+import "quiz-go/views"
+import "quiz-go/internals/quiz"
+import "fmt"
+
+templ QuizListItem(q *quiz.Quiz) {
+    <a href={templ.URL(fmt.Sprintf("/quizzes/%d", q.ID))} class="block p-6 max-w-full sm:max-w-sm bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100">
+        <div class="space-y-2">
+            <img src="/public/images/quizzes/1.png" alt="quiz thumb">
+            <h2 class="text-2xl font-bold tracking-tight text-gray-900">{q.Name}</h2>
+            <p class="font-normal text-gray-700 line-clamp-2">{q.Description}</p>
+        </div>
+    </a>
+}
+
+templ QuizList(quizzes []*quiz.Quiz) {
+	<div class="mx-auto flex w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+	    <div>
+	        <h1 class="text-3xl font-bold">Quizzes</h1>
+            <div class="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                for _, item := range quizzes {
+                    @QuizListItem(item)
+                }
+            </div>
+	    </div>
+	</div>
+
+}
+
+templ QuizListPage(quizzes []*quiz.Quiz) {
+	@views.Layout(QuizList(quizzes))
+}
