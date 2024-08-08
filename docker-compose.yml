@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - .:/app
+      - /app/vendor
+    ports:
+      - "4000:4000"
+    environment:
+      - AIR_WATCHER_DELAY=1000
+
+  css:
+    image: node:latest
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: ["npx", "tailwindcss", "-i", "./views/css/app.css", "-o", "./public/css/styles.css", "--watch"]
+
+  templ:
+    image: golang:1.20
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: ["templ", "generate", "--watch", "--proxy=http://localhost:4000"]
+
+  js:
+    image: node:latest
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: ["node", "esbuild.config.js"]
