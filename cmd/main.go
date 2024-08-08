@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
 	"log"
 	"net/http"
+	"quiz-go/internals"
 	"quiz-go/internals/quiz"
 	home "quiz-go/views/home"
 	quizzes "quiz-go/views/quizzes"
@@ -18,23 +18,22 @@ import (
 
 func main() {
 
-	var store, err = quiz.NewSQLiteStore("database/quiz.db")
+	store, err := quiz.NewSQLiteStore("database/quiz.db")
 	if err != nil {
 		log.Fatalf("Error creating db store: %s", err.Error())
 	}
 
-	//db := initDB()
 	seedDB(store.DB)
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
+	r.Use(internals.StoreMiddleware(store)) // Use the middleware
 
 	// Home route
 	r.Handle("/", templ.Handler(home.Home()))
 
 	// Quiz routes
-
 	r.Route("/quizzes", RegisterQuizRoutes)
 
 	// Serve static files from the "public" directory
@@ -55,19 +54,11 @@ func RegisterQuizRoutes(r chi.Router) {
 }
 
 func quizListHandler(w http.ResponseWriter, r *http.Request) {
-	/*list := []quiz.Quiz{
-		{ID: 1, Name: "Sample Quiz 1", Description: "This is a sample quiz 1."},
-		{ID: 2, Name: "Sample Quiz 2", Description: "This is a sample quiz 2."},
-		{ID: 3, Name: "Sample Quiz 3", Description: "This is a sample quiz 3."},
-		{ID: 4, Name: "Sample Quiz 4", Description: "This is a sample quiz 4."},
-		// Add more sample quizzes here
-	}*/
-	var store, err = quiz.NewSQLiteStore("database/quiz.db")
-	if err != nil {
-		log.Fatalf("Error creating db store: %s", err.Error())
-	}
+	ctx := internals.GetAppContext(r)
+	store := ctx.Store
+
 	all, _ := store.ListAllQuizzes()
-	err = quizzes.QuizListPage(all).Render(r.Context(), w)
+	err := quizzes.QuizListPage(all).Render(r.Context(), w)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
@@ -147,19 +138,6 @@ func fileServer(r chi.Router, path string, root http.FileSystem) {
 	})
 }
 
-func initDB() *gorm.DB {
-	db, err := gorm.Open(sqlite.Open("database/quiz.db"), &gorm.Config{})
-	if err != nil {
-		log.Fatal("failed to connect database")
-	}
-
-	err = db.AutoMigrate(&quiz.Quiz{}, &quiz.Question{}, &quiz.Choice{})
-	if err != nil {
-		log.Fatal("failed to migrate database")
-	}
-	return db
-}
-
 func seedDB(db *gorm.DB) {
 	var quizCount int64
 	db.Model(&quiz.Quiz{}).Count(&quizCount)
@@ -168,14 +146,14 @@ func seedDB(db *gorm.DB) {
 		return
 	}
 
-	quizzes := []quiz.Quiz{
+	qs := []quiz.Quiz{
 		{Name: "Quiz 1", Description: "This is a sample quiz."},
 		{Name: "Quiz 2", Description: "This is a sample quiz 2."},
 		{Name: "Quiz 3", Description: "This is a sample quiz 3."},
 		{Name: "Quiz 4", Description: "This is a sample quiz 4."},
 	}
 
-	for i := range quizzes {
+	for i := range qs {
 		for j := 0; j < 10; j++ {
 			questionType := "single-choice"
 			if j%2 == 0 {
@@ -185,18 +163,18 @@ func seedDB(db *gorm.DB) {
 			}
 			question := quiz.Question{
 				Type:    questionType,
-				Content: "Question " + string(j+1),
+				Content: "Question " + strconv.Itoa(j+1),
 				Choices: []quiz.Choice{
 					{Content: "Choice 1", IsCorrect: j%2 == 0},
 					{Content: "Choice 2", IsCorrect: j%3 == 0},
 					{Content: "Choice 3", IsCorrect: j%5 == 0},
 				},
 			}
-			quizzes[i].Questions = append(quizzes[i].Questions, question)
+			qs[i].Questions = append(qs[i].Questions, question)
 		}
 	}
 
-	for _, q := range quizzes {
+	for _, q := range qs {
 		db.Create(&q)
 	}
 
